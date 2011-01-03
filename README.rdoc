@@ -41,7 +41,7 @@ This is actually 1.9.2 but the package name is wrong.
     sudo apt-get install python-software-properties
     sudo add-apt-repository ppa:deepfryed/dbic++
     sudo apt-get update
-    sudo apt-get install dbic++-dev dbic++-pg dbic++-sqlite3
+    sudo apt-get install dbic++-dev dbic++-pg
 
 === Website
 
