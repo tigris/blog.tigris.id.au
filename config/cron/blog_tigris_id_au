@@ -1,0 +1,2 @@
+MAILTO="danial"
+*/5 * * * * danial cd /srv/blog.tigris.id.au && git checkout master -q && git reset --hard -q && git pull -q origin master >/dev/null

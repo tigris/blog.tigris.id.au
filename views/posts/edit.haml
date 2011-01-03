@@ -1,0 +1,16 @@
+%h1 Edit a post
+
+%form#post{method: :post, action: "/posts/#{@post.slug}"}
+
+  %input{type: :hidden, name: '_method', value: :put}
+
+  %ul
+    %li#title
+      %label{:for => :post_title} Title:
+      %input{:type => :text, :id => :post_title, :name => :title, :value => @post.title}
+
+    %li#content
+      %label{for: :post_content} Content:
+      %textarea{id: :post_description, name: :content, cols: 80, rows: 15}= @post.content
+
+  %input{type: :submit, value: 'Save post.'}

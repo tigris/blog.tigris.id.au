@@ -1,0 +1,17 @@
+server.modules += ("mod_auth")
+
+$HTTP["host"] =~ "^blog.tigris.id.au$" {
+  server.document-root = "/srv/blog.tigris.id.au/public"
+
+  auth.backend = "htpasswd"
+  auth.backend.htpasswd.userfile = "/home/danial/git/util-private/.htpasswd"
+  auth.require = (
+    "" => (
+      "method" => "basic",
+      "realm"  => "blog",
+      "require" => "valid-user"
+    )
+  )
+
+  # TODO: unicorn shit
+}

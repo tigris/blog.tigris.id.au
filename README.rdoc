@@ -1,0 +1,64 @@
+= blog.tigris.id.au
+
+== Description
+
+My blog.
+
+== TODO
+
+* Pagination for archive / tags pages.
+* Markdown for post content (see: maruku gem)
+* Potential syntax highlighting for code posts (see: syntax gem)
+* Implement has_many :through for swift-more so i can ditch the PostTag class
+* Make the tags shit in blog/post.rb work properly.
+* bin/* files, like unicorn wrapper etc
+
+== System setup notes
+
+=== Packages
+
+This is actually 1.9.2 but the package name is wrong.
+
+* Ruby.
+    sudo apt-get install ruby1.9.1 ruby1.9.1-dev
+    cd /usr/bin
+    sudo ln -s ruby1.9.1 ruby
+    sudo ln -s gem1.9.1 gem
+    sudo ln -s irb1.9.1 irb
+    sudo vim /etc/environment
+    # Add /var/lib/gems/1.9.1/bin to the PATH
+    sudo gem install bundler
+
+* Postgres
+    sudo apt-get install postgresql
+    sudo perl -pi -e 's/^(host .* 127.0.0.1\/32 .*) md5/$1 trust/' /etc/postgresql/8.4/main/pg_hba.conf
+    sudo perl -pi -e 's/^(local .*) ident/$1 trust/' /etc/postgresql/8.4/main/pg_hba.conf
+    sudo /etc/init.d/postgresql reload
+    sudo su - postgres -c 'createuser -s danial'
+    createdb blog
+
+dbicpp is a dependency for the swift rubygem we will be using, it's currenly
+only listed in a third party lucid apt source, but should be fine for maverick
+and saves installing a butt load of dev packages so we can compile from source.
+
+* Dependencies for swift gem
+    sudo vim /etc/apt/sources.list
+    # Add deb http://ppa.launchpad.net/deepfryed/ppa/ubuntu lucid main
+    # Add deb-src http://ppa.launchpad.net/deepfryed/ppa/ubuntu lucid main
+    sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C694F4225CBEFE90
+    sudo apt-get update
+    sudo apt-get install dbic++-pg dbic++-dev build-essentials libpcre3-dev uuid-dev
+
+=== Website
+
+* Initial website deploy
+    cd /srv
+    git clone git@github.com:tigris/blog.tigris.id.au.git
+
+* Symlink the git hook
+    cd /srv/www.tigris.id.au/.git/hooks
+    ln -s ../../config/hooks/post-merge
+
+* Setup the lighttpd config
+    cd /etc/lighttpd/conf-enabled
+    sudo cp /srv/www.tigris.id.au/config/lighttpd/blog.tigris.id.au .

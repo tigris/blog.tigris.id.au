@@ -1,0 +1,9 @@
+%h1= @post.title
+
+%p.metadata
+  Published
+  %abbr{:title => date_iso8601(@post.created_at)}= date_humanized(@post.created_at) + '.'
+
+%p.tags= @post.tags.join(' ')
+
+%p.content= @post.content

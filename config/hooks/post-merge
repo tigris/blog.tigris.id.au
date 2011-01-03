@@ -1,0 +1,88 @@
+#!/bin/bash
+
+home="/srv"
+app="blog.tigris.id.au"
+mailto="danial"
+
+new_tag=RELEASE-$(date +%Y%m%dT%H%M%S)
+old_tag=$(git tag -l RELEASE* | sort -r | head -n1)
+old_tag=${old_tag:-"HEAD^"}
+daemons=""
+migrations=""
+
+update_gems() {
+  logs=`bundle install --locale --path gems 2>&1`
+
+  if [ $? != 0 ]; then
+    echo "failed to gem bundle: $! $logs" | mail -s "failed to restart $app due to bundler issue" $mailto
+    exit 1
+  fi
+}
+
+update_cron() {
+  config=$(git diff $old_tag | grep "^--- a/config/cron")
+  if [ "x$config" != "x" ]; then
+    sudo cp config/cron/* /etc/cron.d
+    sudo chown root.root /etc/cron.d/*
+  fi
+}
+
+restart_daemons() {
+  config=$(git diff $old_tag | grep "^--- a/config/lighttpd")
+  if [ "x$config" != "x" ]; then
+    sudo cp config/lighttpd/*.conf /etc/lighttpd/conf-enabled
+    sudo service lighthttpd reload > /dev/null
+    daemons="$daemons lighttpd"
+  fi
+
+  config=$(git diff $old_tag | grep "^--- a/lib")
+  if [ "x$config" != "x" ]; then
+    # TODO: restart unicorn
+    daemons="$daemons unicorn"
+  fi
+}
+
+run_migrations() {
+  for file in `git diff --summary $old_tag  | grep "create mode [0-9]\+ migrations" | sed s'/^.* migrations.//'`; do
+    if [ -x migrations/$file ]; then
+      migrations="$migrations $file"
+      ./migrations/$file >> /tmp/$$.migrate.log 2>&1
+
+      if [ $? != 0 ]; then
+        cat /tmp/$$.migrate.log | mail -s "failed to restart $app due to migration issue" $mailto
+        exit 1
+      fi
+    fi
+  done
+}
+
+print_changelog() {
+  cat<<EOM
+Hi,
+
+$app updated.
+
+The following migrations were run:
+
+   ${migrations:-"None"}
+
+The following daemons were reloaded/restarted:
+
+   ${daemons:-"None"}
+
+$app has been updated with the following changes
+
+====================================================
+
+$(git log --stat --no-color $old_tag..HEAD)
+EOM
+}
+
+cd $home/$app
+update_cron
+update_gems
+run_migrations
+restart_daemons
+
+git tag $new_tag
+print_changelog | mail -s "Restarted $app" $mailto
