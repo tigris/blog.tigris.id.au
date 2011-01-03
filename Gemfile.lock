@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/shanna/swift.git
-  revision: 1f4cf8d9c85bc20e59c909e8fb940e2f6e35c079
+  revision: afd211362f7d2df0e8264ea7ad2c1e0662fda892
   specs:
     swift (0.7.2)
 
