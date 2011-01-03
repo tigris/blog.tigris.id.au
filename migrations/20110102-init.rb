@@ -4,7 +4,7 @@ commands() {
   cat <<SQL
     begin;
 
-      create table posts(
+      create table posts (
         id         serial primary key,
         slug       varchar(100) unique not null,
         title      varchar(255) not null,
@@ -12,19 +12,14 @@ commands() {
         created_at timestamp not null default now()
       );
 
-      create table tags(
-        id   serial primary key,
-        name text unique not null
+      create table tags (
+        post_id integer references posts (id) on delete cascade,
+        name varchar(20),
+        primary key (post_id, name)
       );
 
-      create table posts_tags(
-        post_id integer references posts (id),
-        tag_id  integer references tags (id),
-        primary key (post_id, tag_id)
-      );
-
-      create index index_posts_tags_post_id on posts_tags using btree (post_id);
-      create index index_posts_tags_tag_id on posts_tags using btree (tag_id);
+      create index index_tags_post_id on tags using btree (post_id);
+      create index index_tags_name on tags (name);
 
     commit;
 SQL
