@@ -28,20 +28,20 @@ module Blog
       @tags = tags
     end
 
-    def create(*args)
+    def self.create(*args)
       Blog.db.transaction do |db|
-        super(*args)
-        update_tags_association
+        post = super(*args)
+        update_tags_association(post)
       end
-      self
+      post
     end
 
     def update(*args)
       Blog.db.transaction do |db|
-        super(*args)
-        update_tags_association
+        ret = super(*args)
+        # TODO: call update_tags_association() which is a private class method
       end
-      self
+      ret
     end
 
     private
@@ -49,17 +49,17 @@ module Blog
         super(slug)
       end
 
-      def update_tags_association
-        current_tags = Blog.db.execute('select name from tags where post_id = ?', id)
-        added_tags   = @tags - current_tags
-        removed_tags = current_tags - @tags
+      def self.update_tags_association(post)
+        current_tags = Blog.db.execute('select name from tags where post_id = ?', post.id)
+        added_tags   = post.tags - current_tags
+        removed_tags = current_tags - post.tags
         if !removed_tags.empty?
-          delete = Blog.db.prepare('delete from tags where :post_id = ? and :name = ?')
-          removed_tags.each{|t| delete.execute(t) }
+          delete = Blog.db.prepare('delete from tags where post_id = ? and name = ?')
+          removed_tags.each{|t| delete.execute(post.id, t) }
         end
         if !added_tags.empty?
           insert = dp.prepare('insert into tags (post_id, tag) values(?, ?)')
-          added_tags.each{|t| insert.execute(t) }
+          added_tags.each{|t| insert.execute(post.id, t) }
         end
       end
   end
