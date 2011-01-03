@@ -1,66 +1,63 @@
-require 'blog/tag'
+require 'blog/schema/post'
+require 'blog/schema/tag'
 
 module Blog
-  class Post < Class.new(Swift::Scheme) do
-      attribute :id,         Swift::Type::Integer, serial: true, key: true
-      attribute :slug,       Swift::Type::String
-      attribute :title,      Swift::Type::String
-      attribute :content,    Swift::Type::String
-      attribute :created_at, Swift::Type::Time, default: proc{ Time.now }
-    end
-    store :posts
-
-    def self.get(id)
-      id =~ /^\d+$/ ? super(id) : first(':slug = ?', id)
-    end
-
-    def title=(title)
-      self.slug = title.downcase.gsub(/\s+/, '-').gsub(/[^\w-]/, '') if slug.nil?
-      super(title)
+  class Post
+    def initialize(args)
+      @post = args[:post]
+      @tags = args[:tags]
     end
 
     def tags
-      @tags ||= Blog.db.execute('select name from tags where post_id = ?', id).join(' ')
+      @tags.map{|x| x.name}.join(' ')
     end
 
-    def tags=(tags)
-      tags = tags.join(' ') if tags.is_a?(Array)
-      @tags = tags
+    # TODO: untested delegators for views to get at the data
+    %w(slug title content created_at).each do |att|
+      def att; @post.send(att); end
     end
 
-    def self.create(*args)
-      Blog.db.transaction do |db|
-        post = super(*args)
-        update_tags_association(post)
+    def self.get(id)
+      # TODO: is there a way to get tag info as a join to save on selects
+      post = id =~ /^\d+$/ ? Blog::Schema::Post.get(id) : Blog::Schema::Post.first(':slug = ?', id)
+      tags = Blog::Schema::Tag.all(':post_id = ?', post.id)
+    end
+
+    def self.create(params = {})
+      params = params.merge(slug: generate_slug(params[:title]))
+      tags = params.delete('tags').split rescue []
+      Blog.db do |db|
+        db.transaction do
+          post = Blog::Schema::Post.create(params).first
+          # TODO: find out why swift isn't accepting the following array to create()
+          # tags = Blog::Schema::Tag.create(tags.map{|t| {post_id: post.id, name: t} })
+
+          # Also TODO: find out why this generates missing foreign key error,
+          # surely the create() above on Blog::Scheme::Post generates said key?
+          tags.map!{|t| Blog::Schema::Tag.create(post_id: post.id, name: t) }
+        end
       end
-      post
+      self.new(post: post, tags: tags)
     end
 
-    def update(*args)
-      Blog.db.transaction do |db|
-        ret = super(*args)
-        # TODO: call update_tags_association() which is a private class method
+    def update(params = {})
+      params = params.dup
+      tags   = params.delete('tags').split rescue []
+      params.delete('slug')
+      Blog.db do |db|
+        db.transaction do
+          post = Blog::Schema::Post.update(params)
+          current_tags = Blog::Schema::Tag.all(':post_id = ?', post.id)
+          # TODO: the below passing of array is known to not work yet, see create() method above.
+          Blog::Schema::Tag.create((tags - current_tags).map{|t| {post_id: post.id, name: t} })
+          Blog::Schema::Tag.destroy(post.id, current_tags - tags)
+        end
       end
-      ret
     end
 
     private
-      def slug=(slug)
-        super(slug)
-      end
-
-      def self.update_tags_association(post)
-        current_tags = Blog.db.execute('select name from tags where post_id = ?', post.id)
-        added_tags   = post.tags - current_tags
-        removed_tags = current_tags - post.tags
-        if !removed_tags.empty?
-          delete = Blog.db.prepare('delete from tags where post_id = ? and name = ?')
-          removed_tags.each{|t| delete.execute(post.id, t) }
-        end
-        if !added_tags.empty?
-          insert = dp.prepare('insert into tags (post_id, tag) values(?, ?)')
-          added_tags.each{|t| insert.execute(post.id, t) }
-        end
+      def self.generate_slug(title)
+        title.to_s.downcase.gsub(/\s+/, '-').gsub(/[^\w-]/, '')
       end
   end
 end
