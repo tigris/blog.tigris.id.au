@@ -37,17 +37,11 @@ This is actually 1.9.2 but the package name is wrong.
     sudo su - postgres -c 'createuser -s danial'
     createdb blog
 
-dbicpp is a dependency for the swift rubygem we will be using, it's currenly
-only listed in a third party lucid apt source, but should be fine for maverick
-and saves installing a butt load of dev packages so we can compile from source.
-
 * Dependencies for swift gem
-    sudo vim /etc/apt/sources.list
-    # Add deb http://ppa.launchpad.net/deepfryed/ppa/ubuntu lucid main
-    # Add deb-src http://ppa.launchpad.net/deepfryed/ppa/ubuntu lucid main
-    sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com C694F4225CBEFE90
+    sudo apt-get install python-software-properties
+    sudo add-apt-repository ppa:deepfryed/dbic++
     sudo apt-get update
-    sudo apt-get install dbic++-pg dbic++-dev build-essentials libpcre3-dev uuid-dev
+    sudo apt-get install dbic++-dev dbic++-pg dbic++-sqlite3
 
 === Website
 
