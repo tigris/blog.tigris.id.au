@@ -25,22 +25,19 @@ module Blog
       end
 
       get '/:slug' do
-        @post = Blog::Post.get(:slug) or raise(Sinatra::NotFound)
-        not_found if @post.nil?
+        @post = Blog::Post.get(params[:slug]) or raise(Sinatra::NotFound)
         haml :show
       end
 
       get '/:slug/edit' do
-        @post = Blog::Post.get(:slug) rescue raise(Sinatra::NotFound)
-        not_found if @post.nil?
+        @post = Blog::Post.get(params[:slug]) or raise(Sinatra::NotFound)
         haml :edit
       end
 
       put '/:slug' do
-        post = Blog::Post.get(:slug) rescue raise(Sinatra::NotFound)
-        not_found if post.nil?
+        post = Blog::Post.get(params[:slug]) or raise(Sinatra::NotFound)
         # TODO: update post
-        # post.update(params[:post])
+        post.update(params)
         redirect "/posts/#{post.slug}"
       end
 
