@@ -6,7 +6,6 @@ require 'bundler'
 Bundler.setup(:default) # only adds lib paths for gems in the "default" group
 
 require 'swift'
-require 'swift/more'
 Swift.setup(:default, Swift::DB::Postgres, db: 'blog')
 
 module Blog

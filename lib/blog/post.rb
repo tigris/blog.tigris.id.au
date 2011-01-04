@@ -7,7 +7,6 @@ module Blog
       attribute :title,      Swift::Type::String
       attribute :content,    Swift::Type::String
       attribute :created_at, Swift::Type::Time, default: proc{ Time.now }
-      has_many :tags
     end
     store :posts
 
@@ -21,17 +20,47 @@ module Blog
     end
 
     def tags
-      super.map{|t| t.name}.join(' ')
+      @tags ||= prepare('select name from tags where :post_id = ?').execute(id).map(&:to_s).join(' ')
     end
 
-    # TODO
     def tags=(tags)
-      super(tags.split)
+      tags = tags.join(' ') if tags.is_a?(Array)
+      @tags = tags
+    end
+
+    def create(*args)
+      db.transaction do |db|
+        super(*args)
+        update_tags_association
+      end
+      self
+    end
+
+    def update(*args)
+      db.transaction do |db|
+        super(*args)
+        update_tags_association
+      end
+      self
     end
 
     private
       def slug=(slug)
         super(slug)
+      end
+
+      def update_tags_association
+        current_tags = prepare('select name from tags where :post_id = ?').execute(id)
+        added_tags   = @tags - current_tags
+        removed_tags = current_tags - @tags
+        if !removed_tags.empty?
+          delete = prepare('delete from tags where :post_id = ? and :name = ?')
+          removed_tags.each{|t| delete.execute(t) }
+        end
+        if !added_tags.empty?
+          insert = dp.prepare('insert into tags (post_id, tag) values(?, ?)')
+          added_tags.each{|t| insert.execute(t) }
+        end
       end
   end
 end
