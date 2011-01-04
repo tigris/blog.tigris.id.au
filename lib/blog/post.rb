@@ -2,7 +2,6 @@ require 'blog/tag'
 
 module Blog
   class Post < Class.new(Swift::Scheme) do
-      store :posts
       attribute :id,         Swift::Type::Integer, serial: true, key: true
       attribute :slug,       Swift::Type::String
       attribute :title,      Swift::Type::String
@@ -10,6 +9,7 @@ module Blog
       attribute :created_at, Swift::Type::Time, default: proc{ Time.now }
       has_many :tags
     end
+    store :posts
 
     def self.get(id)
       id =~ /^\d+$/ ? super(id) : first(':slug = ?', id)
