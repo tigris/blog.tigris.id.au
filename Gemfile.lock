@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/deepfryed/swift-more.git
+  revision: cece0d3023a64e280da1624d19b734edd911c709
+  specs:
+    swift-more (0.1.2)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -21,4 +27,5 @@ DEPENDENCIES
   rack
   sinatra
   swift
+  swift-more!
   unicorn

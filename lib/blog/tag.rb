@@ -1,8 +1,10 @@
 module Blog
-  class Tag < Swift::Scheme
-    store :tags
-    attribute :id,   Swift::Type::Integer, serial: true, key: true
-    attribute :name, Swift::Type::String
+  class Tag < Class.new(Swift::Scheme) do
+      store :tags
+      attribute :post_id, Swift::Type::Integer
+      attribute :name,    Swift::Type::String
+      belongs_to :post
+    end
 
     def to_s
       name

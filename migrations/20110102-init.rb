@@ -19,7 +19,7 @@ commands() {
 
       create table posts_tags(
         post_id integer references posts (id),
-        tag_id   integer references tags (id),
+        tag_id  integer references tags (id),
         primary key (post_id, tag_id)
       );
 
@@ -30,5 +30,5 @@ commands() {
 SQL
 }
 
-commands | psql --set ON_ERROR_STOP= blog 2>&1 | grep -v '^\(NOTICE\|BEGIN\|COMMIT\|CREATE\)'
+commands | psql --set ON_ERROR_STOP= blog 2>&1 | grep -v '^\(NOTICE\|BEGIN\|COMMIT\|CREATE\|DROP\)'
 exit $?

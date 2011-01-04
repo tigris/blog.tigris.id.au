@@ -8,6 +8,7 @@ gem 'sinatra'
 
 # DB.
 gem 'swift'
+gem 'swift-more', git: 'https://github.com/deepfryed/swift-more.git'
 
 group :development do
 end
