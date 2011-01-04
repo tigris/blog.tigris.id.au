@@ -14,7 +14,7 @@ module Blog
 
     get '/css/screen.css' do
       # TODO: print, pfft, does anyone print?
-      scss :'css/screen.css'
+      sass :'css/screen'
     end
 
     error Sinatra::NotFound do
