@@ -2,13 +2,14 @@ require 'blog/tag'
 require 'blog/post_tag'
 
 module Blog
-  class Post < Swift::Scheme
-    store :posts
-    attribute :id,         Swift::Type::Integer, serial: true, key: true
-    attribute :slug,       Swift::Type::String
-    attribute :title,      Swift::Type::String
-    attribute :content,    Swift::Type::String
-    attribute :created_at, Swift::Type::Time, default: proc{ Time.now }
+  class Post < Class.new(Swift::Scheme) do
+      store :posts
+      attribute :id,         Swift::Type::Integer, serial: true, key: true
+      attribute :slug,       Swift::Type::String
+      attribute :title,      Swift::Type::String
+      attribute :content,    Swift::Type::String
+      attribute :created_at, Swift::Type::Time, default: proc{ Time.now }
+    end
 
     def self.get(id)
       id =~ /^\d+$/ ? super(id) : first(':slug = ?', id)
@@ -16,7 +17,7 @@ module Blog
 
     def title=(title)
       self.slug = title.downcase.gsub(/\s+/, '-').gsub(/[^\w-]/, '') if slug.nil?
-      self.tuple[:title] = title
+      super(title)
     end
 
     # TODO: this should be able to be done with swift-more associations, eventually
@@ -45,7 +46,7 @@ module Blog
 
     private
       def slug=(slug)
-        self.tuple[:slug] = slug
+        super(slug)
       end
   end
 end
