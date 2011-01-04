@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/shanna/swift.git
+  revision: 1f4cf8d9c85bc20e59c909e8fb940e2f6e35c079
+  specs:
+    swift (0.7.2)
+
 GEM
   remote: http://rubygems.org/
   specs:
@@ -7,7 +13,6 @@ GEM
     sinatra (1.1.2)
       rack (~> 1.1)
       tilt (~> 1.2)
-    swift (0.7.2)
     tilt (1.2.1)
     unicorn (3.2.1)
       kgio (~> 2.1)
@@ -20,5 +25,5 @@ DEPENDENCIES
   haml
   rack
   sinatra
-  swift
+  swift!
   unicorn
