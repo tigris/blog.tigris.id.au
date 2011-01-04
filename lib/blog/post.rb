@@ -20,7 +20,7 @@ module Blog
     end
 
     def tags
-      @tags ||= prepare('select name from tags where :post_id = ?').execute(id).map(&:to_s).join(' ')
+      @tags ||= Blog.db.execute('select name from tags where post_id = ?', id).join(' ')
     end
 
     def tags=(tags)
@@ -29,7 +29,7 @@ module Blog
     end
 
     def create(*args)
-      db.transaction do |db|
+      Blog.db.transaction do |db|
         super(*args)
         update_tags_association
       end
@@ -37,7 +37,7 @@ module Blog
     end
 
     def update(*args)
-      db.transaction do |db|
+      Blog.db.transaction do |db|
         super(*args)
         update_tags_association
       end
@@ -50,11 +50,11 @@ module Blog
       end
 
       def update_tags_association
-        current_tags = prepare('select name from tags where :post_id = ?').execute(id)
+        current_tags = Blog.db.execute('select name from tags where post_id = ?', id)
         added_tags   = @tags - current_tags
         removed_tags = current_tags - @tags
         if !removed_tags.empty?
-          delete = prepare('delete from tags where :post_id = ? and :name = ?')
+          delete = Blog.db.prepare('delete from tags where :post_id = ? and :name = ?')
           removed_tags.each{|t| delete.execute(t) }
         end
         if !added_tags.empty?
