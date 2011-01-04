@@ -25,19 +25,19 @@ module Blog
       end
 
       get '/:slug' do
-        @post = Blog::Post.get(:slug) rescue not_found
+        @post = Blog::Post.get(:slug) or raise(Sinatra::NotFound)
         not_found if @post.nil?
         haml :show
       end
 
       get '/:slug/edit' do
-        @post = Blog::Post.get(:slug) rescue not_found
+        @post = Blog::Post.get(:slug) rescue raise(Sinatra::NotFound)
         not_found if @post.nil?
         haml :edit
       end
 
       put '/:slug' do
-        post = Blog::Post.get(:slug) rescue not_found
+        post = Blog::Post.get(:slug) rescue raise(Sinatra::NotFound)
         not_found if post.nil?
         # TODO: update post
         # post.update(params[:post])
@@ -46,9 +46,9 @@ module Blog
 
       private
         # TODO: rip this shit out into some kind of Sinatra::Nested or something
-        def haml(*args)
-          page = args.shift
-          super("posts/#{page}".to_sym, *args)
+        def haml(page, *args)
+          page = :"posts/#{page}" unless page == :not_found
+          super(page, *args)
         end
     end
   end
