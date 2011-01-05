@@ -20,6 +20,7 @@ module Blog
           # surely the create() above on Scheme::Post generates said key?
           tags.map!{|t| Schema::Tag.create(post_id: post.id, name: t) }
         end
+        post
       end
 
       def update(identifier, params = {})
