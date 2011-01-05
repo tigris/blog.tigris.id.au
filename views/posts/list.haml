@@ -7,7 +7,7 @@
       %p.metadata
         Published on
         %abbr{:title => date_iso8601(p.created_at)}= date_humanized(p.created_at) + '.'
-      %p.tags= p.tags.join(' ')
+      %p.tags= p.tags
       %p.content= p.content
       %p.permalink
         %a{:href => "/posts/#{p.slug}"} permalink

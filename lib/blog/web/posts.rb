@@ -3,10 +3,11 @@ require 'blog/post'
 
 module Blog
   class Web
+    # TODO: error capture
     class Posts < Web
-      # TODO: paginate this shit
       get '/' do
-        @posts = Blog::Post.all
+        # TODO: paginate this shit
+        @posts = Schema::Post.all
         haml :list
       end
 
@@ -15,34 +16,28 @@ module Blog
       end
 
       post '/new' do
-        # TODO: error capture
-        # TODO: figure out why create() is returning an array!
-        post = Blog::Post.create(params).first
-        status 201
+        post = Post.create(params)
         # TODO: url helper?
-        headers 'Location' =>  "/posts/#{post.slug}"
-        body "/posts/#{post.slug}"
+        redirect "/posts/#{post.slug}"
       end
 
       get '/:slug' do
-        @post = Blog::Post.get(params[:slug]) or raise(Sinatra::NotFound)
+        @post = Post.search(params[:slug]) or raise(Sinatra::NotFound)
         haml :show
       end
 
       get '/:slug/edit' do
-        @post = Blog::Post.get(params[:slug]) or raise(Sinatra::NotFound)
+        @post = Post.search(params[:slug]) or raise(Sinatra::NotFound)
         haml :edit
       end
 
-      put '/:slug' do
-        post = Blog::Post.get(params[:slug]) or raise(Sinatra::NotFound)
-        # TODO: update post
-        post.update(params)
+      put '/:slug' do |slug|
+        Post.update(slug, params)
         redirect "/posts/#{post.slug}"
       end
 
       private
-        # TODO: rip this shit out into some kind of Sinatra::Nested or something
+        # TODO: overload views root
         def haml(page, *args)
           page = :"posts/#{page}" unless page == :not_found
           super(page, *args)

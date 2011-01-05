@@ -1,6 +1,8 @@
+require 'blog/schema'
+
 module Blog
-  module Schema
-    class Tag < Swift::Scheme
+  class Schema
+    class Tag < Schema
       store :tags
       attribute :post_id, Swift::Type::Integer
       attribute :name,    Swift::Type::String
