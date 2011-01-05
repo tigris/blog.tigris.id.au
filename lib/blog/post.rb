@@ -4,23 +4,29 @@ require 'blog/schema/tag'
 module Blog
   class Post
     def initialize(args)
-      @post = args[:post]
-      @tags = args[:tags]
+      @post = args[:post] if args[:post]
+      @tags = args[:tags] if args[:tags]
     end
 
     def tags
-      @tags.map{|x| x.name}.join(' ')
+      @tags ||= Schema::Tag.all(':post_id = ?', @post.id).map{|x| x.name}
+      # TODO: find out why this is dying due to can't call join on string... why is @tags a string!?
+      @tags.join(' ')
     end
 
     # TODO: untested delegators for views to get at the data
     %w(slug title content created_at).each do |att|
-      def att; @post.send(att); end
+      eval "def #{att}; @post.#{att}; end"
+    end
+
+    def self.all(*args)
+      Schema::Post.all(*args).map{|p| self.new(post: p) }
     end
 
     def self.get(id)
       # TODO: is there a way to get tag info as a join to save on selects
-      post = id =~ /^\d+$/ ? Blog::Schema::Post.get(id) : Blog::Schema::Post.first(':slug = ?', id)
-      tags = Blog::Schema::Tag.all(':post_id = ?', post.id)
+      id =~ /^\d+$/ ? Schema::Post.get(id) : Schema::Post.first(':slug = ?', id)
+      self.new(post: post)
     end
 
     def self.create(params = {})
@@ -28,13 +34,13 @@ module Blog
       tags = params.delete('tags').split rescue []
       Blog.db do |db|
         db.transaction do
-          post = Blog::Schema::Post.create(params).first
+          post = Schema::Post.create(params).first
           # TODO: find out why swift isn't accepting the following array to create()
-          # tags = Blog::Schema::Tag.create(tags.map{|t| {post_id: post.id, name: t} })
+          # tags = Schema::Tag.create(tags.map{|t| {post_id: post.id, name: t} })
 
           # Also TODO: find out why this generates missing foreign key error,
-          # surely the create() above on Blog::Scheme::Post generates said key?
-          tags.map!{|t| Blog::Schema::Tag.create(post_id: post.id, name: t) }
+          # surely the create() above on Scheme::Post generates said key?
+          tags.map!{|t| Schema::Tag.create(post_id: post.id, name: t) }
         end
       end
       self.new(post: post, tags: tags)
@@ -46,11 +52,11 @@ module Blog
       params.delete('slug')
       Blog.db do |db|
         db.transaction do
-          post = Blog::Schema::Post.update(params)
-          current_tags = Blog::Schema::Tag.all(':post_id = ?', post.id)
+          post = Schema::Post.update(params)
+          current_tags = Schema::Tag.all(':post_id = ?', post.id)
           # TODO: the below passing of array is known to not work yet, see create() method above.
-          Blog::Schema::Tag.create((tags - current_tags).map{|t| {post_id: post.id, name: t} })
-          Blog::Schema::Tag.destroy(post.id, current_tags - tags)
+          Schema::Tag.create((tags - current_tags).map{|t| {post_id: post.id, name: t} })
+          Schema::Tag.destroy(post.id, current_tags - tags)
         end
       end
     end
