@@ -9,9 +9,10 @@ My blog.
 * Pagination for archive / tags pages.
 * Markdown for post content (see: maruku gem)
 * Potential syntax highlighting for code posts (see: syntax gem)
-* Implement has_many :through for swift-more so i can ditch the PostTag class
-* Make the tags shit in blog/post.rb work properly.
 * bin/* files, like unicorn wrapper etc
+* Attachments for posts. Would just be files on disk, should be simple.
+* Image(s) for posts? Perhaps only single.
+* Fix the foreign key issues.
 
 == System setup notes
 
