@@ -12,7 +12,6 @@ My blog.
 * bin/* files, like unicorn wrapper etc
 * Attachments for posts. Would just be files on disk, should be simple.
 * Image(s) for posts? Perhaps only single.
-* Fix the foreign key issues.
 
 == System setup notes
 
