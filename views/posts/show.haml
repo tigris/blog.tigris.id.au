@@ -4,6 +4,6 @@
   Published
   %abbr{:title => date_iso8601(@post.created_at)}= date_humanized(@post.created_at) + '.'
 
-%p.tags= @post.tags.join(' ')
+%p.tags= @post.tags
 
 %p.content= @post.content

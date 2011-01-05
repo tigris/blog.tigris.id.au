@@ -11,7 +11,7 @@ module Blog
       attribute :created_at, Swift::Type::Time, default: proc{ Time.now }
 
       def tags
-        Blog.db.execute('select name from tags where post_id = ?', id).to_a.join(' ')
+        Blog.db.execute('select name from tags where post_id = ?', id).map{|x| x[:name]}.join(' ')
       end
     end
   end
