@@ -22,12 +22,12 @@ module Blog
       end
 
       get '/:slug' do
-        @post = Post.search(params[:slug]) or raise(Sinatra::NotFound)
+        @post = Post.discover(params[:slug]) or raise(Sinatra::NotFound)
         haml :show
       end
 
       get '/:slug/edit' do
-        @post = Post.search(params[:slug]) or raise(Sinatra::NotFound)
+        @post = Post.discover(params[:slug]) or raise(Sinatra::NotFound)
         haml :edit
       end
 

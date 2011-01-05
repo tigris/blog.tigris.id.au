@@ -4,13 +4,15 @@ require 'blog/schema/tag'
 module Blog
   module Post
     class << self
-      def search(identifier)
-        Schema::Post.all(':id = ? or :slug = ?', identifier, identifier)
+      def discover(identifier)
+        field = identifier =~ /^\d+$/ ? :id : :slug
+        Schema::Post.first("#{field} = ?", identifier)
       end
 
       def create(params = {})
         params = params.merge(slug: generate_slug(params[:title]))
         tags = params.delete('tags').split rescue []
+        post = nil
         Blog.db.transaction do
           post = Schema::Post.create(params).first
           # TODO: find out why swift isn't accepting the following array to create()
