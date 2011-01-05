@@ -21,13 +21,13 @@ module Blog
         redirect "/posts/#{post.slug}"
       end
 
-      get '/:slug' do
-        @post = Post.discover(params[:slug]) or raise(Sinatra::NotFound)
+      get '/:slug' do |slug|
+        @post = Post.discover(slug) or raise(Sinatra::NotFound)
         haml :show
       end
 
-      get '/:slug/edit' do
-        @post = Post.discover(params[:slug]) or raise(Sinatra::NotFound)
+      get '/:slug/edit' do |slug|
+        @post = Post.discover(slug) or raise(Sinatra::NotFound)
         haml :edit
       end
 
@@ -35,13 +35,6 @@ module Blog
         Post.update(slug, params)
         redirect "/posts/#{post.slug}"
       end
-
-      private
-        # TODO: overload views root
-        def haml(page, *args)
-          page = :"posts/#{page}" unless page == :not_found
-          super(page, *args)
-        end
     end
   end
 end

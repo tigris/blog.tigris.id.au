@@ -1,11 +1,12 @@
 require 'haml'
-require 'sinatra/base'
+require 'sinatra/nested'
 require 'sinatra/date'
 
 module Blog
-  class Web < Sinatra::Base
+  class Web < Sinatra::Nested
     set :root, Blog.root
     set :haml, escape_html: true, format: :html5
+    set :nested_class_root, self
 
     get '/' do
       haml :home
@@ -17,7 +18,8 @@ module Blog
     end
 
     error Sinatra::NotFound do
-      haml :not_found
+      # TODO: set a flag for Sinatra::Nested to not alter paths for error views?
+      haml :not_found, :views => File.join(Blog.root, 'views')
     end
   end
 end
