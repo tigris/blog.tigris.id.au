@@ -7,7 +7,7 @@ gem 'unicorn'
 gem 'sinatra'
 
 # DB.
-gem 'swift', git: 'https://github.com/shanna/swift.git'
+gem 'swift'
 
 group :development do
 end
