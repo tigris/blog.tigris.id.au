@@ -4,6 +4,19 @@ require 'blog/schema/tag'
 module Blog
   module Post
     class << self
+      # TODO: should this live in either Schema::Tag or Blog::Tag?
+      def find_by_tags(tags)
+        return [] if tags.empty?
+        sql = <<-SQL
+          select distinct(posts.*)
+          from posts
+          join tags on (posts.id = tags.post_id)
+          where tags.name in (#{(['?'] * tags.size).join(',')})
+          order by created_at
+        SQL
+        Blog.db.execute(sql, *tags).to_a.map{|x| Schema::Post.new(x) }
+      end
+
       def discover(identifier)
         field = identifier =~ /^\d+$/ ? :id : :slug
         Schema::Post.first("#{field} = ?", identifier)

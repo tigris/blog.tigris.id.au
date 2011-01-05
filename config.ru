@@ -5,3 +5,6 @@ map('/') { run Blog::Web }
 
 require 'blog/web/posts'
 map('/posts') { run Blog::Web::Posts }
+
+require 'blog/web/tags'
+map('/tags') { run Blog::Web::Tags }

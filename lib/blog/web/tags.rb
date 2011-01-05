@@ -4,17 +4,11 @@ require 'blog/post'
 module Blog
   class Web
     class Tags < Web
-      get %r{/(.*)$/} do |tags|
+      get %r{^/(.*)$} do |tags|
         tags = tags.split(/\s|\+/)
-        @posts = Blog::Post.all
+        @posts = Blog::Post.find_by_tags(tags)
         haml :list
       end
-
-    private
-      # TODO: rip this shit out into some kind of Sinatra::Nested or something
-      def haml(*args)
-        page = args.shift
-        super("tags/#{page}".to_sym, *args)
-      end
+    end
   end
 end
