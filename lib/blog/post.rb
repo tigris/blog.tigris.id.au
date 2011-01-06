@@ -50,6 +50,12 @@ module Blog
         post
       end
 
+      def attachments(post)
+        Dir.chdir(File.join(Blog.root, 'public')) do
+          Dir.glob(File.join('attachments', 'posts', post.id, '*'))
+        end
+      end
+
       private
         def generate_slug(title)
           title.to_s.downcase.gsub(/\s+/, '-').gsub(/[^\w-]/, '')
