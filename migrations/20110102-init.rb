@@ -8,6 +8,7 @@ commands() {
         id         serial primary key,
         slug       varchar(100) unique not null,
         title      varchar(255) not null,
+        summary    text not null,
         content    text not null,
         created_at timestamp not null default now()
       );
