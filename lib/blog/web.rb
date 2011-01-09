@@ -1,7 +1,7 @@
 require 'haml'
-require 'coffee-script'
-require 'sinatra/nested'
+require 'sinatra/base'
 require 'sinatra/date'
+require 'sinatra/url'
 require 'blog/schema/tag'
 
 module Blog

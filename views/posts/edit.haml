@@ -1,5 +1,5 @@
 %h1 Edit a post
-%form#post{method: :post, action: "/posts/#{@post.slug}"}
+%form#post{method: :post, action: url_for(:update, @post)}
   %input{type: :hidden, name: '_method', value: :put}
   %ul
     %li#title

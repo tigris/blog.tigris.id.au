@@ -1,5 +1,6 @@
 require 'blog/web'
 require 'blog/post'
+require 'blog/schema/post'
 
 module Blog
   class Web
@@ -17,8 +18,7 @@ module Blog
 
       post '/new' do
         post = Post.create(params)
-        # TODO: url helper?
-        redirect "posts/#{post.slug}"
+        redirect url_for(:show, post)
       end
 
       get '/:slug' do |slug|
@@ -33,7 +33,7 @@ module Blog
 
       put '/:slug' do |slug|
         Post.update(slug, params)
-        redirect "/posts/#{post.slug}"
+        redirect url_for(:show, post)
       end
     end
   end

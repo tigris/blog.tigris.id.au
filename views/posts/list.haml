@@ -8,4 +8,6 @@
   %p.metadata
     Posted
     %abbr{:title => date_iso8601(post.created_at)}= date_humanized(post.created_at) + '.'
+  %p.permalink
+    %a{href: url_for(:show, post)} permalink
   %hr

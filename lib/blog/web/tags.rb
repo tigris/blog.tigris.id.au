@@ -7,7 +7,7 @@ module Blog
       get %r{^/(.*)$} do |tags|
         tags = tags.split(/\s|\+/)
         @posts = Blog::Post.find_by_tags(tags)
-        haml :"tags/list"
+        haml :'posts/list'
       end
     end
   end

@@ -1,5 +1,5 @@
 %h1 Submit a new post
-%form#post{method: :post, action: '/posts/new'}
+%form#post{method: :post, action: url_for(:new, :post)}
   %ul
     %li#title
       %label{for: :post_title} Title:
