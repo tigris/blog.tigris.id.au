@@ -1,13 +1,11 @@
-%h2 All posts
-
-%ol
-  - for p in @posts
-    %li.post
-      %h3.title= p.title
-      %p.metadata
-        Published on
-        %abbr{:title => date_iso8601(p.created_at)}= date_humanized(p.created_at) + '.'
-      %p.tags= p.tags
-      %p.content= p.content
-      %p.permalink
-        %a{:href => "/posts/#{p.slug}"} permalink
+- @posts.each do |post|
+  %h2= post.title
+  %span.tags
+    Posted in
+    - post.tags.map do |tag|
+      %a{href: "/tags/#{tag.name}"}= tag.name
+  %p.summary= post.summary
+  %p.metadata
+    Posted
+    %abbr{:title => date_iso8601(post.created_at)}= date_humanized(post.created_at) + '.'
+  %hr

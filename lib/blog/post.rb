@@ -17,6 +17,10 @@ module Blog
         Blog.db.execute(sql, *tags).to_a.map{|x| Schema::Post.new(x) }
       end
 
+      def latest(limit)
+        Schema::Post.all('1=1 order by :created_at limit ?', limit)
+      end
+
       def discover(identifier)
         field = identifier =~ /^\d+$/ ? :id : :slug
         Schema::Post.first("#{field} = ?", identifier)

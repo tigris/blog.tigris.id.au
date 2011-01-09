@@ -1,25 +1,27 @@
 require 'haml'
+require 'coffee-script'
 require 'sinatra/nested'
 require 'sinatra/date'
+require 'blog/schema/tag'
 
 module Blog
-  class Web < Sinatra::Nested
+  class Web < Sinatra::Base
     set :root, Blog.root
     set :haml, escape_html: true, format: :html5
-    set :nested_class_root, self
 
-    get '/' do
-      haml :home
+    helpers do
+      def tags
+        Schema::Tag.all
+      end
     end
 
-    get '/css/screen.css' do
-      # TODO: print, pfft, does anyone print?
-      sass :'css/screen'
+    get '/' do
+      @posts = Post.latest(5)
+      haml :'posts/list'
     end
 
     error Sinatra::NotFound do
-      # TODO: set a flag for Sinatra::Nested to not alter paths for error views?
-      haml :not_found, :views => File.join(Blog.root, 'views')
+      haml :not_found
     end
   end
 end

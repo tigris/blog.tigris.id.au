@@ -8,27 +8,27 @@ module Blog
       get '/' do
         # TODO: paginate this shit
         @posts = Schema::Post.all
-        haml :list
+        haml :'posts/list'
       end
 
       get '/new' do
-        haml :new
+        haml :'posts/new'
       end
 
       post '/new' do
         post = Post.create(params)
         # TODO: url helper?
-        redirect "/posts/#{post.slug}"
+        redirect "posts/#{post.slug}"
       end
 
       get '/:slug' do |slug|
         @post = Post.discover(slug) or raise(Sinatra::NotFound)
-        haml :show
+        haml :'posts/show'
       end
 
       get '/:slug/edit' do |slug|
         @post = Post.discover(slug) or raise(Sinatra::NotFound)
-        haml :edit
+        haml :'posts/edit'
       end
 
       put '/:slug' do |slug|

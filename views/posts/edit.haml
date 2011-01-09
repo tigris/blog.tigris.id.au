@@ -1,16 +1,17 @@
 %h1 Edit a post
-
 %form#post{method: :post, action: "/posts/#{@post.slug}"}
-
   %input{type: :hidden, name: '_method', value: :put}
-
   %ul
     %li#title
-      %label{:for => :post_title} Title:
-      %input{:type => :text, :id => :post_title, :name => :title, :value => @post.title}
-
+      %label{for: :post_title} Title:
+      %input{type: :text, id: :post_title, name: :title, value: @post.title}
+    %li#tags
+      %label{for: :post_tags} Tags:
+      %input{type: :text, id: :post_tags, name: :tags value: @post.tags.join(' ')}
+    %li#summary
+      %label{for: :post_summary} Summary:
+      %textarea{id: :post_summary, name: :summary, cols: 80, rows: 10}= @post.summary
     %li#content
       %label{for: :post_content} Content:
-      %textarea{id: :post_description, name: :content, cols: 80, rows: 15}= @post.content
-
+      %textarea{id: :post_content, name: :content, cols: 80, rows: 15}= @post.content
   %input{type: :submit, value: 'Save post.'}

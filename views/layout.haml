@@ -1,11 +1,46 @@
 !!! 5
-%html
+%html{xmlns: 'http://www.w3.org/1999/xhtml'}
   %head
-    %title Danial Pearce - Blog
-    %link{rel: :stylesheet, href: '/css/screen.css', type: 'text/css', media: :screen, charset: 'utf-8'}
+    %meta{'http-equiv' => 'Content-Type', 'content' => 'text/html; charset=utf-8'}
+    %title vibrant - Free CSS Template by spyka Webmaster
+    %link{rel: 'stylesheet', href: 'css/styles.css', type: 'text/css'}
+    %script{src: 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.4/jquery.min.js', type: 'text/javascript'}
+    %script{src: '/js/blog.js', type: 'text/javascript'}
   %body
-    #header
-      %h1 My blog
-    #body
-      != yield
-    #footer
+    %div#container
+      %div#header
+        %h1
+          %a{href: '/'} vibrant
+        %h2 your website slogan here
+        %div.clear
+      %div#nav
+        %ul
+          %li.red#home
+            %a{href: '/'} Home
+          %li.orange#all
+            %a{href: '/posts'} All Posts
+          %li.green#about
+            %a{href: '/about'} About
+          %li.blue#contact
+            %a{href: '/contact'} Contact
+      %div#body
+        %div#content
+          != yield
+        %div.sidebar
+          %ul
+            %li
+              %h4.orange.tags Tags
+              %ul
+                - tags.each do |tag|
+                  %li= "#{tag.name} (#{tag.count})"
+            %li
+              %h4.blue Search
+              %ul
+                %li
+                  %form.searchform
+                    %p
+                      %input.s{type: 'text', size: '24', value: '', name: 's'}
+                      %input.searchsubmit.formbutton{type: 'submit', value: 'search'}
+        %div.clear
+      %div#footer
+        %div.footer-content
