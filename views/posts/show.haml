@@ -1,9 +1,10 @@
 %h1= @post.title
-
-%p.metadata
-  Published
+%div.tags
+  Posted in
+  != @post.tags.map{|t| %Q(<a href="#{url_for(:show, t, id: t.name)}">#{t}</a>) }.join(', ')
+%div.post_content= @post.content
+%div.metadata
+  Posted
   %abbr{:title => date_iso8601(@post.created_at)}= date_humanized(@post.created_at) + '.'
-
-%p.tags= @post.tags.to_a.join(', ')
-
-%p.content= @post.content
+%div.permalink
+  %a{href: url_for(:show, @post)} permalink
