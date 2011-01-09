@@ -1,13 +1,10 @@
 - @posts.each do |post|
-  %h2= post.title
-  %span.tags
+  %h2
+    %a{href: url_for(:show, post)}= post.title
+  %div.tags
     Posted in
-    - post.tags.map do |tag|
-      %a{href: "/tags/#{tag.name}"}= tag.name
-  %p.summary= post.summary
-  %p.metadata
+    != post.tags.map{|t| %Q(<a href="#{url_for(:show, t, id: t.name)}">#{t}</a>) }.join(', ')
+  %div.summary= post.summary
+  %div.metadata
     Posted
     %abbr{:title => date_iso8601(post.created_at)}= date_humanized(post.created_at) + '.'
-  %p.permalink
-    %a{href: url_for(:show, post)} permalink
-  %hr

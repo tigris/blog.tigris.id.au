@@ -21,7 +21,7 @@ module Sinatra
           when :update then nil
           else            :action
         end
-        [route, id, action].compact.join('/')
+        '/' + [route, id, action].compact.join('/')
       end
     end
 
