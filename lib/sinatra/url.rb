@@ -19,7 +19,7 @@ module Sinatra
           when :show   then nil
           when :list   then nil
           when :update then nil
-          else            :action
+          else              action
         end
         '/' + [route, id, action].compact.join('/')
       end

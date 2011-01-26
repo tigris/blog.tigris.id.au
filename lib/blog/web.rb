@@ -15,6 +15,11 @@ module Blog
       end
     end
 
+    before do
+      @user = 'danial'
+      #@user = ENV['HTTP_USER']
+    end
+
     get '/' do
       @posts = Post.latest(5)
       haml :'posts/list'

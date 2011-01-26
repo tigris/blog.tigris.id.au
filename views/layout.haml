@@ -28,6 +28,17 @@
           != yield
         %div.sidebar
           %ul
+            - if !@user.nil?
+              %li
+                %h4.green.admin Admin (#{@user})
+                %ul
+                  %li
+                    %a{href: url_for(:new, :post)} Create
+                  - if !@post.nil?
+                    %li
+                      %a{href: url_for(:edit, @post)} Edit
+                    %li
+                      %a{href: url_for(:delete, @post)} Delete
             %li
               %h4.orange.tags Tags
               %ul
