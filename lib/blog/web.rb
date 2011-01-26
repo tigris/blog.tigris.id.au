@@ -6,6 +6,7 @@ require 'blog/schema/tag'
 
 module Blog
   class Web < Sinatra::Base
+    use Rack::MethodOverride
     set :root, Blog.root
     set :haml, escape_html: true, format: :html5
 
