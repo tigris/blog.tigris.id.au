@@ -7,7 +7,7 @@
       %input{type: :text, id: :post_title, name: :title, value: @post.title}
     %li#tags
       %label{for: :post_tags} Tags:
-      %input{type: :text, id: :post_tags, name: :tags value: @post.tags.join(' ')}
+      %input{type: :text, id: :post_tags, name: :tags, value: @post.tags.to_a.join(' ')}
     %li#summary
       %label{for: :post_summary} Summary:
       %textarea{id: :post_summary, name: :summary, cols: 80, rows: 10}= @post.summary

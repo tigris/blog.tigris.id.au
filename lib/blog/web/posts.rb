@@ -32,7 +32,7 @@ module Blog
       end
 
       put '/:slug' do |slug|
-        Post.update(slug, params)
+        post = Post.update(slug, params)
         redirect url_for(:show, post)
       end
     end
