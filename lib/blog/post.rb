@@ -47,11 +47,9 @@ module Blog
         Blog.db do |db|
           db.transaction do
             post.update(params)
-            current_tags = Schema::Tag.all(':post_id = ?', post.id).to_a.map{|x| x.name}
-            add          = tags - current_tags
-            delete       = current_tags - tags
-            db.create Schema::Tag, add.map{|t| *{post_id: post.id, name: t} } unless add.empty?
-            db.destroy Schema::Tag, delete.map{|t| *{post_id: post.id, name: t} } unless delete.empty?
+            current_tags = Schema::Tag.all(':post_id = ?', post.id).to_a
+            current_tags.reject{|x| tags.include? x.name}.each{|t| t.destroy}
+            (tags - current_tags.map{|x| x.name}).each{|t| Schema::Tag.create(post_id: post.id, name: t) }
           end
         end
         post
