@@ -40,15 +40,18 @@ module Blog
       end
 
       def update(identifier, params = {})
-        post = search(identifier)
+        post   = discover(identifier)
         params = params.dup
         tags   = params.delete('tags').split rescue []
+        params.delete('_method')
         Blog.db do |db|
           db.transaction do
-            post = Schema::Post.update(params)
-            current_tags = Schema::Tag.all(':post_id = ?', post.id)
-            db.create Schema::Tag, *(tags - current_tags).map{|t| {post_id: post.id, name: t} }
-            db.destroy Schema::Tag, *(current_tags - tags).map{|t| {post_id: post.id, name: t} }
+            post.update(params)
+            current_tags = Schema::Tag.all(':post_id = ?', post.id).to_a.map{|x| x.name}
+            add          = tags - current_tags
+            delete       = current_tags - tags
+            db.create Schema::Tag, add.map{|t| *{post_id: post.id, name: t} } unless add.empty?
+            db.destroy Schema::Tag, delete.map{|t| *{post_id: post.id, name: t} } unless delete.empty?
           end
         end
         post
