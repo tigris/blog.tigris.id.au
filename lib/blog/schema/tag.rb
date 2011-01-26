@@ -8,11 +8,15 @@ module Blog
       attribute :name,    Swift::Type::String
 
       def count
-        Blog.db.execute('select count(*) as count from tags where name = ?', self.name).first.count.to_i
+        Blog.db.execute('select count(*) as count from tags where name = ?', name).first.count.to_i
       end
 
       def to_s
         name
+      end
+
+      def destroy
+        Blog.db.execute('delete from tags where post_id = ? and name = ?', post_id, name)
       end
     end
   end
